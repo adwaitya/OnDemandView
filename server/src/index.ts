@@ -7,9 +7,18 @@ import { createServer } from "http";
 import app from "./app";
 import logger from "./logger";
 
+
+
+console.log('process.env.MONGODB_CONNECTION_STRING', process.env.MONGODB_CONNECTION_STRING);
 mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING as string)
-  .then(() => console.log("Connected to database !"));
+
+
+  const db = mongoose.connection;
+  db.on('error', console.error.bind(console, 'connection error:'));
+  db.once('open', function() {
+    logger.info('Connected to MongoDB');
+  });
 
 const PORT = 8000;
 const httpServer = createServer(app);
